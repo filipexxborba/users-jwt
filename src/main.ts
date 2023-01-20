@@ -11,7 +11,12 @@ async function bootstrap() {
     .setTitle('Users JWT and Bcrypt authentication')
     .setDescription('Users JWT and Bcrypt authentication project')
     .setVersion('1.0.0')
-    .addTag('User', 'user')
+    .addBearerAuth({
+      name: 'jwt',
+      description: 'JWT authentication',
+      type: 'http',
+      scheme: 'Bearer',
+    })
     .build();
 
   // Swagger initialization
