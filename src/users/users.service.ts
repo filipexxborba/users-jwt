@@ -12,8 +12,14 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create(createUserDto: CreateUserDto) {
-    const hashPassword = await bcrypt.hash(createUserDto.password, bcryptConstants.saltRounds);
-    const createdUser = new this.userModel({...createUserDto, password: hashPassword});
+    const hashPassword = await bcrypt.hash(
+      createUserDto.password,
+      bcryptConstants.saltRounds,
+    );
+    const createdUser = new this.userModel({
+      ...createUserDto,
+      password: hashPassword,
+    });
     return createdUser.save();
   }
 
@@ -29,8 +35,12 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.findByIdAndUpdate(id, updateUserDto).exec();
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const updateUser = await this.userModel.findById(id);
+    const hashPassword = await bcrypt.hash(updateUserDto.password, bcryptConstants.saltRounds);
+    updateUser.username = updateUserDto.username;
+    updateUser.password = hashPassword;
+    return updateUser.save();
   }
 
   remove(id: string) {
